@@ -1,0 +1,86 @@
+{
+  "DataProcessor": {
+    "FunctionName": "linkedin-ads-data-processor",
+    "Runtime": "python3.11",
+    "Handler": "handler.lambda_handler",
+    "Role": "arn:aws:iam::ACCOUNT_ID:role/LinkedInAdsDataProcessorRole",
+    "Code": {
+      "S3Bucket": "DEPLOYMENT_BUCKET",
+      "S3Key": "lambda/data_processor.zip"
+    },
+    "Description": "Prepares ML training data from LinkedIn Ads performance data",
+    "Timeout": 300,
+    "MemorySize": 1024,
+    "Environment": {
+      "Variables": {
+        "BUCKET_NAME": "linkedin-ads-data-ACCOUNT_ID",
+        "ATHENA_OUTPUT_BUCKET": "linkedin-ads-athena-results-ACCOUNT_ID",
+        "ATHENA_DATABASE": "linkedin_ads"
+      }
+    },
+    "Tags": {
+      "Project": "LinkedInAdsOptimization",
+      "Component": "DataProcessor"
+    },
+    "Layers": []
+  },
+  "Optimizer": {
+    "FunctionName": "linkedin-ads-optimizer",
+    "Runtime": "python3.11",
+    "Handler": "handler.lambda_handler",
+    "Role": "arn:aws:iam::ACCOUNT_ID:role/LinkedInAdsOptimizerRole",
+    "Code": {
+      "S3Bucket": "DEPLOYMENT_BUCKET",
+      "S3Key": "lambda/optimizer.zip"
+    },
+    "Description": "Main optimization engine - pauses losers, scales winners, adjusts bids",
+    "Timeout": 600,
+    "MemorySize": 2048,
+    "Environment": {
+      "Variables": {
+        "BUCKET_NAME": "linkedin-ads-data-ACCOUNT_ID",
+        "ATHENA_OUTPUT_BUCKET": "linkedin-ads-athena-results-ACCOUNT_ID",
+        "ATHENA_DATABASE": "linkedin_ads",
+        "LINKEDIN_ACCESS_TOKEN_SECRET": "linkedin-access-token",
+        "SNS_TOPIC_ARN": "arn:aws:sns:REGION:ACCOUNT_ID:linkedin-ads-alerts",
+        "MIN_CTR_THRESHOLD": "1.0",
+        "TOP_PERFORMER_THRESHOLD": "3.0",
+        "MAX_CPC": "8.0",
+        "MIN_SAMPLE_SIZE": "100",
+        "BID_CHANGE_THRESHOLD": "0.50",
+        "CREATIVE_SCORER_ENDPOINT": "",
+        "BID_OPTIMIZER_ENDPOINT": ""
+      }
+    },
+    "Tags": {
+      "Project": "LinkedInAdsOptimization",
+      "Component": "Optimizer"
+    },
+    "Layers": []
+  },
+  "CopyGenerator": {
+    "FunctionName": "linkedin-ads-copy-generator",
+    "Runtime": "python3.11",
+    "Handler": "handler.lambda_handler",
+    "Role": "arn:aws:iam::ACCOUNT_ID:role/LinkedInAdsCopyGeneratorRole",
+    "Code": {
+      "S3Bucket": "DEPLOYMENT_BUCKET",
+      "S3Key": "lambda/copy_generator.zip"
+    },
+    "Description": "Generates new ad copy variations using Claude API based on winning patterns",
+    "Timeout": 300,
+    "MemorySize": 512,
+    "Environment": {
+      "Variables": {
+        "BUCKET_NAME": "linkedin-ads-data-ACCOUNT_ID",
+        "ATHENA_OUTPUT_BUCKET": "linkedin-ads-athena-results-ACCOUNT_ID",
+        "ANTHROPIC_API_KEY_SECRET": "anthropic-api-key"
+      }
+    },
+    "Tags": {
+      "Project": "LinkedInAdsOptimization",
+      "Component": "CopyGenerator"
+    },
+    "Layers": []
+  }
+}

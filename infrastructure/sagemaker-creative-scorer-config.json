@@ -1,0 +1,52 @@
+{
+  "TrainingJobName": "linkedin-ads-creative-scorer-TIMESTAMP",
+  "RoleArn": "arn:aws:iam::ACCOUNT_ID:role/LinkedInAdsSageMakerRole",
+  "AlgorithmSpecification": {
+    "TrainingImage": "683313688378.dkr.ecr.us-east-2.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+    "TrainingInputMode": "File",
+    "EnableSageMakerMetricsTimeSeries": true
+  },
+  "InputDataConfig": [
+    {
+      "ChannelName": "training",
+      "DataSource": {
+        "S3DataSource": {
+          "S3DataType": "S3Prefix",
+          "S3Uri": "s3://BUCKET_NAME/training_data/creative_scoring/",
+          "S3DataDistributionType": "FullyReplicated"
+        }
+      },
+      "ContentType": "text/csv",
+      "CompressionType": "None"
+    }
+  ],
+  "OutputDataConfig": {
+    "S3OutputPath": "s3://BUCKET_NAME/models/creative_scorer/"
+  },
+  "ResourceConfig": {
+    "InstanceType": "ml.m5.xlarge",
+    "InstanceCount": 1,
+    "VolumeSizeInGB": 10
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 3600
+  },
+  "HyperParameters": {
+    "n_estimators": "100",
+    "max_depth": "10",
+    "min_samples_split": "5",
+    "min_samples_leaf": "2",
+    "sagemaker_program": "train_creative_scorer.py",
+    "sagemaker_submit_directory": "s3://BUCKET_NAME/code/sagemaker/"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "LinkedInAdsOptimization"
+    },
+    {
+      "Key": "Model",
+      "Value": "CreativeScorer"
+    }
+  ]
+}

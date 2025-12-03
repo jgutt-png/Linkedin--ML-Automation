@@ -1,0 +1,303 @@
+{
+  "DataProcessorRole": {
+    "RoleName": "LinkedInAdsDataProcessorRole",
+    "Description": "IAM role for Data Processor Lambda - prepares ML training data",
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "ManagedPolicyArns": [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ],
+    "InlinePolicies": {
+      "S3Access": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:GetObject",
+              "s3:PutObject",
+              "s3:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::linkedin-ads-data-*",
+              "arn:aws:s3:::linkedin-ads-data-*/*"
+            ]
+          }
+        ]
+      },
+      "AthenaAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "athena:StartQueryExecution",
+              "athena:GetQueryExecution",
+              "athena:GetQueryResults"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "glue:GetTable",
+              "glue:GetDatabase",
+              "glue:GetPartitions"
+            ],
+            "Resource": "*"
+          }
+        ]
+      },
+      "CloudWatchAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "cloudwatch:PutMetricData"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    }
+  },
+  "OptimizerRole": {
+    "RoleName": "LinkedInAdsOptimizerRole",
+    "Description": "IAM role for Optimizer Lambda - main decision engine",
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "ManagedPolicyArns": [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ],
+    "InlinePolicies": {
+      "S3Access": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:GetObject",
+              "s3:PutObject",
+              "s3:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::linkedin-ads-data-*",
+              "arn:aws:s3:::linkedin-ads-data-*/*"
+            ]
+          }
+        ]
+      },
+      "AthenaAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "athena:StartQueryExecution",
+              "athena:GetQueryExecution",
+              "athena:GetQueryResults"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "glue:GetTable",
+              "glue:GetDatabase"
+            ],
+            "Resource": "*"
+          }
+        ]
+      },
+      "SecretsAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "arn:aws:secretsmanager:*:*:secret:linkedin-*"
+          }
+        ]
+      },
+      "SNSAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "sns:Publish"
+            ],
+            "Resource": "arn:aws:sns:*:*:linkedin-ads-*"
+          }
+        ]
+      },
+      "SageMakerAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "sagemaker:InvokeEndpoint"
+            ],
+            "Resource": "arn:aws:sagemaker:*:*:endpoint/linkedin-ads-*"
+          }
+        ]
+      },
+      "CloudWatchAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "cloudwatch:PutMetricData"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    }
+  },
+  "CopyGeneratorRole": {
+    "RoleName": "LinkedInAdsCopyGeneratorRole",
+    "Description": "IAM role for Copy Generator Lambda - Claude API ad copy generation",
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "ManagedPolicyArns": [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ],
+    "InlinePolicies": {
+      "S3Access": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:GetObject",
+              "s3:PutObject",
+              "s3:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::linkedin-ads-data-*",
+              "arn:aws:s3:::linkedin-ads-data-*/*"
+            ]
+          }
+        ]
+      },
+      "AthenaAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "athena:StartQueryExecution",
+              "athena:GetQueryExecution",
+              "athena:GetQueryResults"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "glue:GetTable",
+              "glue:GetDatabase"
+            ],
+            "Resource": "*"
+          }
+        ]
+      },
+      "SecretsAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "arn:aws:secretsmanager:*:*:secret:anthropic-*"
+          }
+        ]
+      }
+    }
+  },
+  "TokenRotatorRole": {
+    "RoleName": "LinkedInAdsTokenRotatorRole",
+    "Description": "IAM role for Token Rotator Lambda - automatic OAuth refresh",
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "ManagedPolicyArns": [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ],
+    "InlinePolicies": {
+      "SecretsManagerRotation": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "secretsmanager:GetSecretValue",
+              "secretsmanager:PutSecretValue",
+              "secretsmanager:UpdateSecretVersionStage",
+              "secretsmanager:DescribeSecret"
+            ],
+            "Resource": "arn:aws:secretsmanager:*:*:secret:linkedin-*"
+          }
+        ]
+      },
+      "SNSAccess": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "sns:Publish"
+            ],
+            "Resource": "arn:aws:sns:*:*:linkedin-ads-*"
+          }
+        ]
+      }
+    }
+  }
+}

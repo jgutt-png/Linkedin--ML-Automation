@@ -1,0 +1,69 @@
+{
+  "RoleName": "LinkedInAdsSageMakerRole",
+  "Description": "IAM role for SageMaker training jobs - LinkedIn Ads ML models",
+  "AssumeRolePolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "sagemaker.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+  "ManagedPolicyArns": [
+    "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+  ],
+  "InlinePolicies": {
+    "S3Access": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject",
+            "s3:ListBucket"
+          ],
+          "Resource": [
+            "arn:aws:s3:::linkedin-ads-data-*",
+            "arn:aws:s3:::linkedin-ads-data-*/*"
+          ]
+        }
+      ]
+    },
+    "CloudWatchLogs": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+            "logs:DescribeLogStreams"
+          ],
+          "Resource": "arn:aws:logs:*:*:log-group:/aws/sagemaker/*"
+        }
+      ]
+    },
+    "ECRAccess": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ecr:GetAuthorizationToken",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+  }
+}

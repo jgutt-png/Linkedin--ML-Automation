@@ -1,0 +1,78 @@
+{
+  "DataProcessorSchedule": {
+    "Name": "linkedin-ads-data-processor-daily",
+    "Description": "Trigger data processor Lambda daily to prepare ML training data",
+    "ScheduleExpression": "cron(0 6 * * ? *)",
+    "State": "ENABLED",
+    "Target": {
+      "Arn": "arn:aws:lambda:REGION:ACCOUNT_ID:function:linkedin-ads-data-processor",
+      "RoleArn": "arn:aws:iam::ACCOUNT_ID:role/EventBridgeToLambdaRole",
+      "Input": "{}"
+    },
+    "Comment": "Runs at 6 AM UTC daily to prepare training data from previous day's performance"
+  },
+  "OptimizerSchedule": {
+    "Name": "linkedin-ads-optimizer-daily",
+    "Description": "Trigger optimizer Lambda daily for automated campaign optimization",
+    "ScheduleExpression": "cron(0 8 * * ? *)",
+    "State": "ENABLED",
+    "Target": {
+      "Arn": "arn:aws:lambda:REGION:ACCOUNT_ID:function:linkedin-ads-optimizer",
+      "RoleArn": "arn:aws:iam::ACCOUNT_ID:role/EventBridgeToLambdaRole",
+      "Input": "{}"
+    },
+    "Comment": "Runs at 8 AM UTC daily to optimize campaigns (pause losers, scale winners, adjust bids)"
+  },
+  "CopyGeneratorScheduleWeekly": {
+    "Name": "linkedin-ads-copy-generator-weekly",
+    "Description": "Trigger copy generator Lambda weekly to create new ad variations",
+    "ScheduleExpression": "cron(0 9 ? * MON *)",
+    "State": "ENABLED",
+    "Target": {
+      "Arn": "arn:aws:lambda:REGION:ACCOUNT_ID:function:linkedin-ads-copy-generator",
+      "RoleArn": "arn:aws:iam::ACCOUNT_ID:role/EventBridgeToLambdaRole",
+      "Input": "{\"product_info\": \"YOUR_PRODUCT_DESCRIPTION that helps investors find off-market deals and distressed properties\", \"target_audience\": \"YOUR_TARGET_AUDIENCE (e.g., professionals in your target industry)\", \"num_variations\": 5}"
+    },
+    "Comment": "Runs every Monday at 9 AM UTC to generate fresh ad copy based on winning patterns"
+  },
+  "SageMakerTrainingScheduleMonthly": {
+    "Name": "linkedin-ads-sagemaker-training-monthly",
+    "Description": "Trigger SageMaker training jobs monthly to retrain models",
+    "ScheduleExpression": "cron(0 2 1 * ? *)",
+    "State": "DISABLED",
+    "Target": {
+      "Arn": "arn:aws:lambda:REGION:ACCOUNT_ID:function:linkedin-ads-sagemaker-trainer",
+      "RoleArn": "arn:aws:iam::ACCOUNT_ID:role/EventBridgeToLambdaRole",
+      "Input": "{}"
+    },
+    "Comment": "Runs on the 1st of each month at 2 AM UTC - DISABLED until sufficient data accumulated. Triggers both creative scorer and bid optimizer retraining."
+  },
+  "EventBridgeRole": {
+    "RoleName": "EventBridgeToLambdaRole",
+    "Description": "Allows EventBridge to invoke Lambda functions",
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "events.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "InlinePolicies": {
+      "InvokeLambda": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:*:*:function:linkedin-ads-*"
+          }
+        ]
+      }
+    }
+  }
+}

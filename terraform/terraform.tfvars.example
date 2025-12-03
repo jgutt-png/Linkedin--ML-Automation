@@ -1,0 +1,17 @@
+# AWS Configuration
+aws_region  = "us-east-2"
+environment = "prod"
+
+# Project Settings
+project_name = "linkedin-ads-automation"
+
+# LinkedIn Campaign IDs (comma-separated)
+# Update after creating campaigns in LinkedIn
+campaign_ids = ""
+
+# Schedules
+collection_schedule = "rate(6 hours)"           # Collect data every 6 hours
+optimizer_schedule  = "cron(0 9 * * ? *)"       # Run optimizer daily at 9 AM UTC
+
+# Alerting (optional)
+alert_email = "your-email@acquisitionatlas.com"
